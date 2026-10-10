@@ -3,6 +3,7 @@ import argparse
 import ast
 from copy import deepcopy
 import importlib.util
+import inspect
 import os
 from os import path as osp
 from pathlib import Path
@@ -133,6 +134,31 @@ class PortabilityTest(unittest.TestCase):
         test_config = (ROOT / 'options/test/model/test.yml').read_text()
         checkpoint = re.search(r'^\s+pretrain_network_g:\s*(\S+)', test_config, re.M).group(1)
         self.assertTrue((ROOT / checkpoint).is_file())
+
+    def test_checkpoint_loader_prefers_weights_only_when_supported(self):
+        source = ROOT / 'codes/models/base_model.py'
+        tree = ast.parse(source.read_text())
+        cls = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == 'BaseModel')
+        method = next(node for node in cls.body if isinstance(node, ast.FunctionDef) and node.name == 'load_network')
+        method.decorator_list = []
+        for supports_weights_only in (True, False):
+            calls = []
+            loaded = []
+            def modern_load(path, *, weights_only=False):
+                calls.append((path, weights_only))
+                return {'stub': True}
+            def legacy_load(path):
+                calls.append((path, None))
+                return {'stub': True}
+            namespace = {'inspect': inspect,
+                         'torch': SimpleNamespace(load=modern_load if supports_weights_only else legacy_load),
+                         'logger': SimpleNamespace(info=lambda message: None)}
+            exec(compile(ast.Module(body=[method], type_ignores=[]), str(source), 'exec'), namespace)
+            network = SimpleNamespace(load_state_dict=lambda state, strict: loaded.append((state, strict)))
+            model = SimpleNamespace(get_bare_model=lambda net: net)
+            namespace['load_network'](model, network, 'fake-checkpoint.pth', strict=True)
+            self.assertEqual(calls, [('fake-checkpoint.pth', True if supports_weights_only else None)])
+            self.assertEqual(loaded, [({'stub': True}, True)])
 
     def test_local_import_targets_exist(self):
         for path in (ROOT / 'codes').rglob('*.py'):

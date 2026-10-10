@@ -1,3 +1,5 @@
+# Modified: prefer weights-only checkpoint deserialization when supported by PyTorch.
+import inspect
 import logging
 import os
 import torch
@@ -213,7 +215,10 @@ class BaseModel():
     def load_network(self, net, load_path, strict=True):
         net = self.get_bare_model(net)
         logger.info(f'Loading {net.__class__.__name__} model from {load_path}.')
-        load_net = torch.load(load_path)
+        load_options = {}
+        if 'weights_only' in inspect.signature(torch.load).parameters:
+            load_options['weights_only'] = True
+        load_net = torch.load(load_path, **load_options)
         net.load_state_dict(load_net, strict=strict)
 
     @master_only
