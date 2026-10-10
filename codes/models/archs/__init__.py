@@ -1,3 +1,4 @@
+# Modified: discover the original FLG.py architecture as well as *_arch.py modules.
 import importlib
 from os import path as osp
 
@@ -9,7 +10,7 @@ from codes.utils import scandir
 arch_folder = osp.dirname(osp.abspath(__file__))
 arch_filenames = [
     osp.splitext(osp.basename(v))[0] for v in scandir(arch_folder)
-    if v.endswith('_arch.py')
+    if v.endswith('_arch.py') or v == 'FLG.py'
 ]
 # import all the arch modules
 _arch_modules = [
@@ -31,6 +32,7 @@ def dynamic_instantiation(modules, cls_type, opt):
         class: Instantiated class.
     """
 
+    cls_ = None
     for module in modules:
         cls_ = getattr(module, cls_type, None)
         if cls_ is not None:

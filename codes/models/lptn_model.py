@@ -1,3 +1,4 @@
+# Modified: replace missing LPTN_arch wildcard import with the functional API used by SSIM.
 import importlib
 import torch
 from collections import OrderedDict
@@ -12,7 +13,7 @@ from codes.models.archs import define_network
 from codes.models.base_model import BaseModel
 from codes.models.losses import compute_gradient_penalty
 from codes.utils import get_root_logger, imwrite, tensor2img
-from codes.models.archs.LPTN_arch import *
+from torch.nn import functional as F
 
 loss_module = importlib.import_module('codes.models.losses')
 metric_module = importlib.import_module('codes.metrics')

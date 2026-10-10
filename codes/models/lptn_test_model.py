@@ -1,3 +1,4 @@
+# Modified: use the checkpoint path already normalized by the configuration parser.
 import importlib
 import torch
 from collections import OrderedDict
@@ -27,7 +28,7 @@ class LPTNTestModel(BaseModel):
         # load pretrained models
         load_path = self.opt['path'].get('pretrain_network_g', None)
         if load_path is not None:
-            self.load_network(self.net_g, self.opt['path']['root']+load_path,
+            self.load_network(self.net_g, load_path,
                               self.opt['path'].get('strict_load_g', True))
 
     def feed_data(self, data):

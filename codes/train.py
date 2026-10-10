@@ -1,3 +1,4 @@
+# Modified: portable project-relative option paths; keep model behavior unchanged.
 import argparse
 import datetime
 import logging
@@ -18,11 +19,15 @@ from codes.utils import (MessageLogger, check_resume,
 
 from codes.utils.dist_util import get_dist_info, init_dist
 from codes.utils.options import dict2str, parse
+from codes.config_paths import resolve_project_path
 
 def parse_options(is_train=True):
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-opt', type=str, default='/options/train/model/train_FiveK.yml', help='Path to option YAML file.')
+        '-opt', type=str,
+        default=('options/train/model/FLGNet.yml' if is_train else
+                 'options/test/model/test.yml'),
+        help='Absolute path or path relative to the repository root.')
     parser.add_argument(
         '--launcher',
         choices=['none', 'pytorch', 'slurm'],
@@ -32,24 +37,9 @@ def parse_options(is_train=True):
     args = parser.parse_args()
 
 
-    # windows 上面加了这2句 znn
-    path_root=osp.abspath(osp.join(__file__, osp.pardir, osp.pardir))+ '\\'
-    args.opt=path_root+ args.opt
-
-    opt = parse(args.opt, is_train=is_train)
-
-    path_root2=osp.abspath(osp.join(__file__, osp.pardir, osp.pardir, osp.pardir, osp.pardir)) + '\\'
-    # windows 上面加了这4句 znn
-    if 'test' in opt['datasets']:
-        opt['datasets']['test']['dataroot_gt'] = path_root + opt['datasets']['test']['dataroot_gt']
-        opt['datasets']['test']['dataroot_lq'] = path_root + opt['datasets']['test']['dataroot_lq']
-    if 'train' in opt['datasets']:
-        opt['datasets']['train']['dataroot_gt'] = path_root2 + opt['datasets']['train']['dataroot_gt']
-        opt['datasets']['train']['dataroot_lq'] = path_root2 + opt['datasets']['train']['dataroot_lq']
-
-    if 'val' in opt['datasets']:
-        opt['datasets']['val']['dataroot_gt'] = path_root2 + opt['datasets']['val']['dataroot_gt']
-        opt['datasets']['val']['dataroot_lq'] = path_root2 + opt['datasets']['val']['dataroot_lq']
+    project_root = osp.dirname(osp.dirname(osp.abspath(__file__)))
+    opt_path = resolve_project_path(args.opt, project_root)
+    opt = parse(opt_path, is_train=is_train)
 
     # distributed settings
     if args.launcher == 'none':

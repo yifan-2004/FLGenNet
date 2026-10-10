@@ -1,8 +1,11 @@
+# Modified: resolve dataset and checkpoint paths consistently from repository root.
 import os.path
 
 import yaml
 from collections import OrderedDict
 from os import path as osp
+
+from codes.config_paths import resolve_project_path
 
 
 def ordered_yaml():
@@ -41,11 +44,12 @@ def parse(opt_path, is_train=True):
         (dict): Options.
     """
 
-    with open(opt_path, mode='r') as f:
+    with open(opt_path, mode='r', encoding='utf-8') as f:
         Loader, _ = ordered_yaml()
         opt = yaml.load(f, Loader=Loader)
 
     opt['is_train'] = is_train
+    project_root = osp.dirname(osp.dirname(osp.dirname(osp.abspath(__file__))))
 
     # datasets
     for phase, dataset in opt['datasets'].items():
@@ -55,17 +59,16 @@ def parse(opt_path, is_train=True):
         if 'scale' in opt:
             dataset['scale'] = opt['scale']
         if dataset.get('dataroot_gt') is not None:
-            dataset['dataroot_gt'] = osp.expanduser(dataset['dataroot_gt'])
+            dataset['dataroot_gt'] = resolve_project_path(dataset['dataroot_gt'], project_root)
         if dataset.get('dataroot_lq') is not None:
-            dataset['dataroot_lq'] = osp.expanduser(dataset['dataroot_lq'])
+            dataset['dataroot_lq'] = resolve_project_path(dataset['dataroot_lq'], project_root)
 
     # paths
     for key, val in opt['path'].items():
         if (val is not None) and ('resume_state' in key
                                   or 'pretrain_network' in key):
-            opt['path'][key] = osp.expanduser(val)
-    opt['path']['root'] = osp.abspath(
-        osp.join(__file__, osp.pardir, osp.pardir, osp.pardir))
+            opt['path'][key] = resolve_project_path(val, project_root)
+    opt['path']['root'] = project_root
     if is_train:
         experiments_root = osp.join(opt['path']['root'], 'experiments',
                                     opt['name'])
