@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use FLGenNet, please cite the public paper below."
+type: software
+title: "FLGenNet"
+authors:
+  - family-names: Ouyang
+    given-names: Yifan
+  - family-names: Liu
+    given-names: Jiaqi
+  - family-names: Qasem
+    given-names: Ashwaq
+repository-code: "https://github.com/yifan-2004/FLGenNet"
+license: Apache-2.0
+preferred-citation:
+  type: article
+  title: "FLGenNet: Frequency Decomposition-based Lightweight Generalization Network for Low-Light Image Enhancement"
+  authors:
+    - family-names: Ouyang
+      given-names: Yifan
+    - family-names: Liu
+      given-names: Jiaqi
+    - family-names: Qasem
+      given-names: Ashwaq
+  year: 2026
+  date-published: 2026-03-28
+  journal: "SSRN preprint"
+  doi: "10.2139/ssrn.6482333"
+  url: "https://ssrn.com/abstract=6482333"

@@ -8,6 +8,31 @@
 >
 > Yifan Ouyang, Jiaqi Liu, Ashwaq Qasem
 
+## 公开论文
+
+**第一作者：Yifan Ouyang（Ouyang, Yifan）**。公开页面的作者顺序为 Yifan Ouyang、Jiaqi Liu、Ashwaq Qasem。
+
+| 信息 | 内容 |
+| --- | --- |
+| 标题 | FLGenNet: Frequency Decomposition-based Lightweight Generalization Network for Low-Light Image Enhancement |
+| 公开平台 | SSRN 预印本 |
+| 公开日期 | 2026 年 3 月 28 日 |
+| DOI | [10.2139/ssrn.6482333](https://doi.org/10.2139/ssrn.6482333) |
+| 阅读与下载 | [SSRN 公开论文页面](https://ssrn.com/abstract=6482333) |
+
+论文入口指向作者的公开版本；本仓库尚未托管 PDF 副本。代码许可证不自动适用于论文。
+
+```bibtex
+@misc{ouyang2026flgennet,
+  title = {FLGenNet: Frequency Decomposition-based Lightweight Generalization Network for Low-Light Image Enhancement},
+  author = {Ouyang, Yifan and Liu, Jiaqi and Qasem, Ashwaq},
+  year = {2026},
+  howpublished = {SSRN preprint},
+  doi = {10.2139/ssrn.6482333},
+  url = {https://ssrn.com/abstract=6482333}
+}
+```
+
 ## 方法与效果
 
 ![FLGenNet 原始网络结构图](Figs/FLGenNet.jpg)
